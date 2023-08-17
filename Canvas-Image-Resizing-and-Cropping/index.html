@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizing image</title>
+</head>
+<body>
+  <canvas width="1080" id="myCanvas"></canvas>
+  <button id="save-btn">Save</button>
+  <script>
+    const canvas/* : HTMLCanvasElement */ = document.getElementById("myCanvas")
+    const ctx = canvas.getContext("2d")
+
+    const image = new Image()
+    image.src = "./testImg1.jpeg"
+    image.onload = function() {
+      proceed(this)
+    }
+
+    /* 
+    The idea is to downscale the image to width: 1080px while maintaining its aspect ratio.
+    But, if after downscaling, the height is greater than 1350px. Crop the image to center to height: 1350px 
+    */
+
+    function proceed(image/* : HTMLImageElement */) {
+      // calculate image height for 1080px width
+      const resizeToHeight = (image.naturalHeight * 1080) / image.naturalWidth;
+      // set it as the canvas height
+      canvas.height = resizeToHeight;
+      // no need to crop. Just draw image
+      
+      ctx.imageSmoothingEnabled = false /* To maintain image sharpness */
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
+      
+      // now lets crop the image if it is greater than 1350
+      if (canvas.height > 1350) {
+        // get the image back
+        const paintedImage = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        // redraw it to crop
+        // set crop height
+        canvas.height = 1350
+        // vertically center the image
+        
+        ctx.imageSmoothingEnabled = false /* To maintain image sharpness */
+        ctx.putImageData(paintedImage, canvas.width / 2 - paintedImage.width / 2, canvas.height / 2 - paintedImage.height / 2)
+      }
+    }
+
+    document.getElementById("save-btn").onclick = function() {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url;
+        link.download = "resized_result.jpg"
+        link.click()
+      }, "image/jpeg", 0.80)
+    }
+  </script>
+</body>
+</html>
