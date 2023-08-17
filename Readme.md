@@ -1,5 +1,5 @@
 # What's here?
-These are are utility programs I implented myself via braistorming
+These are are utility programs I implented myself via brainstorming
 
 1. Canvas Image resizing and cropping.
 2. Create post, mention(@) and hashtag(#) colorization.
